@@ -4,15 +4,11 @@
 
 Học kỳ 1, Năm học 2023-2024
 
-**MSSV 1** : 
+**MSSV ** : B2005831
 
-**Họ tên SV 1**:
+**Họ tên SV **:Lê Tuấn Anh
 
-**MSSV 2**:
+**Lớp học phần**:CT313M02
 
-**Họ tên SV 2**:
-
-**Lớp học phần**:
-
-**Tên dự án**:
+**Tên dự án**:Website chia sẽ tài liệu miễn phí.
 
