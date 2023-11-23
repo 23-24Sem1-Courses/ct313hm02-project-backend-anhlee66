@@ -23,11 +23,11 @@ function makeFileService() {
   }
 
   async function getFileByID(id) {
-    return knex("files").where("FileID", id).select("*").first();
+    return await knex("files").where("fileID", id).select("*").first();
   }
 
   async function getFileByFilter(query) {
-    const { title, courseName, page = 1, limit = 5 } = query;
+    const { title, courseName, email, page = 1, limit = 5, search } = query;
     const paginator = new Paginator(page, limit);
     let results = await knex("files")
       .join("courses", "courses.courseID", "=", "files.courseID")
@@ -39,22 +39,37 @@ function makeFileService() {
         if (courseName !== undefined) {
           builder.where("courseName", "like", `%${courseName}%`);
         }
+        if (email !== undefined) {
+          builder.where("email", "like", email);
+        }
+        if (search !== undefined) {
+          const words = search.split(" ");
+          let key = "";
+          words.forEach((word, index) => {
+            key =
+              key +
+              `title LIKE '%${word}%' OR fullName LIKE '%${word}%' OR courseName LIKE '%${word}%' OR `;
+          });
+          key = key.substring(0, key.length - 4);
+          // console.log(key);
+          builder.whereRaw(key);
+        }
       })
       .select(
-        knex.raw("count(fileID) OVER() as recordCount"),
+        knex.raw("count(fileID) OVER() as recordsCount"),
         "fileID",
         "title",
         "courseName",
         "fullName",
         "email"
       )
-      .limit(this.limit)
-      .offset(this.offset);
+      .limit(paginator.limit)
+      .offset(paginator.offset);
     // console.log(recordCount);
     let totalRecords = 0;
     results = results.map((result) => {
-      totalRecords = result.recordCount;
-      delete result.recordCount;
+      totalRecords = result.recordsCount;
+      delete result.recordsCount;
       return result;
     });
     return {
@@ -63,12 +78,19 @@ function makeFileService() {
     };
     // return results;
   }
-
+  async function saveFile(file) {
+    try {
+      return await knex("files").insert(file);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return {
     readFileService,
     createFile,
     getFileByID,
     getFileByFilter,
+    saveFile,
   };
 }
 

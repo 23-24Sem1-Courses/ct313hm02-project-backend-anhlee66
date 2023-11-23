@@ -48,10 +48,15 @@ function makeUserService() {
     let results = await knex("users").select("email", "password");
     return results;
   }
+
+  async function getUserID(user) {
+    return await knex("users").select("userID").where("email", "like", user);
+  }
   return {
     readUserService,
     createUser,
     getAllUser,
+    getUserID,
     login,
   };
 }
