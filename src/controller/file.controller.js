@@ -105,8 +105,8 @@ async function deleteFile(req, res) {
   const id = req.params.id;
   const { title } = await fileService.getFileByID(id);
   console.log(title);
-  // const status = await fileService.deleteFile(id);
-  const status = 1;
+  const status = await fileService.deleteFile(id);
+  // const status = 1;
   console.log("status", status, id);
   if (status) {
     return res.send({ message: `Delete file "${title}" successfully` });
