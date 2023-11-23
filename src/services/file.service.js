@@ -7,6 +7,7 @@ function makeFileService() {
       title: payload.title,
       description: payload.description,
       path: payload.path,
+      thumbnail: payload.thumbnail,
       uploadDate: Date.now(),
       userID: payload.userID,
       courseID: payload.courseID,
@@ -48,9 +49,9 @@ function makeFileService() {
           words.forEach((word, index) => {
             key =
               key +
-              `title LIKE '%${word}%' OR fullName LIKE '%${word}%' OR courseName LIKE '%${word}%' OR `;
+              `(title LIKE '%${word}%' OR fullName LIKE '%${word}%' OR courseName LIKE '%${word}%') AND `;
           });
-          key = key.substring(0, key.length - 4);
+          key = key.substring(0, key.length - 5);
           // console.log(key);
           builder.whereRaw(key);
         }
@@ -61,7 +62,8 @@ function makeFileService() {
         "title",
         "courseName",
         "fullName",
-        "email"
+        "email",
+        "thumbnail"
       )
       .limit(paginator.limit)
       .offset(paginator.offset);
@@ -85,12 +87,21 @@ function makeFileService() {
       console.log(error);
     }
   }
+  async function deleteFile(id) {
+    try {
+      const status = await knex("files").where("fileID", id).del();
+      return status;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return {
     readFileService,
     createFile,
     getFileByID,
     getFileByFilter,
     saveFile,
+    deleteFile,
   };
 }
 

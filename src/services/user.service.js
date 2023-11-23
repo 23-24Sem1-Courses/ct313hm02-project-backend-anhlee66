@@ -52,12 +52,31 @@ function makeUserService() {
   async function getUserID(user) {
     return await knex("users").select("userID").where("email", "like", user);
   }
+  async function getUserInfo(email) {
+    try {
+      return await knex("users").select("*").where("email", email);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function updateUser(id, user) {
+    try {
+      const userInfo = readUserService(user);
+      console.log(id, user);
+      return await knex("users").where("userID", id).update(userInfo);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return {
     readUserService,
     createUser,
     getAllUser,
+    getUserInfo,
     getUserID,
     login,
+    updateUser,
   };
 }
 

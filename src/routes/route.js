@@ -10,6 +10,9 @@ router.route("/signup").post(userController.register).all(methodNotAllowed);
 router.route("/login").post(userController.login).all(methodNotAllowed);
 router.route("/logout").get(userController.logout);
 
+router.route("/user").get(userController.getUserInfo);
+router.route("/user/:id").post(userController.updateUser);
+
 router.route("/file/upload").post(fileController.uploadFile);
 router.route("/file/download/:id").get(fileController.downloadFile);
 router
@@ -17,7 +20,10 @@ router
   .post(fileController.createFile)
   .get(fileController.getFileByFilter);
 
-router.route("/file/:id").get(fileController.getFileByID);
+router
+  .route("/file/:id")
+  .get(fileController.getFileByID)
+  .delete(fileController.deleteFile);
 
 router
   .route("/course")

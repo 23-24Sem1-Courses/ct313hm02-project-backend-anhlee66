@@ -38,9 +38,9 @@ async function getFileByID(req, res, next) {
       root: DIR,
     };
     // const fileName = `${DIR}/${path}`;
-    const fileName =
-      "D:/Development/NodeJS/DocSharing/ct313hm02-project-backend-anhlee66/public/thumbnail.png";
-    // const fileName = "D:/pass.txt";
+    // const fileName =
+    // "D:/Development/NodeJS/DocSharing/ct313hm02-project-backend-anhlee66/public/thumbnail.png";
+    const fileName = "D:/pass.txt";
     // console.log(fileName);
     return res.sendFile(fileName);
   } catch (error) {
@@ -100,10 +100,24 @@ function downloadFile(req, res, next) {
   return res.send({ message: "Download File" });
 }
 
+async function deleteFile(req, res) {
+  const fileService = makeFileService();
+  const id = req.params.id;
+  const { title } = await fileService.getFileByID(id);
+  console.log(title);
+  // const status = await fileService.deleteFile(id);
+  const status = 1;
+  console.log("status", status, id);
+  if (status) {
+    return res.send({ message: `Delete file "${title}" successfully` });
+  }
+}
+
 module.exports = {
   createFile,
   getFileByFilter,
   getFileByID,
   uploadFile,
   downloadFile,
+  deleteFile,
 };

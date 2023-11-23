@@ -54,8 +54,20 @@ function logout(req, res, next) {
     });
   });
 }
-
-
+async function getUserInfo(req, res) {
+  const userService = makeUserService();
+  const user = await userService.getUserInfo(req.query.email);
+  return res.send(user);
+}
+async function updateUser(req, res) {
+  const userService = makeUserService();
+  const user = await userService.updateUser(req.params.id, req.body);
+  if (user) {
+    return res
+      .status(200)
+      .send({ message: `Update user "${req.body.email}" successfully` });
+  }
+}
 
 function isAuthenticated(req, res, next) {
   console.log(req.session.user);
@@ -66,4 +78,6 @@ module.exports = {
   register,
   login,
   logout,
+  getUserInfo,
+  updateUser,
 };
