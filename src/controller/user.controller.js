@@ -1,7 +1,7 @@
 const { route } = require("../app");
 const ApiError = require("../app.error");
 const makeUserService = require("../services/user.service");
-
+const DIR = "D:/ct313hm02-project-backend-anhlee66/public/avatar/";
 async function register(req, res, next) {
   try {
     const userService = makeUserService();
@@ -11,7 +11,13 @@ async function register(req, res, next) {
       return res.status(300).send({ message: "already" });
       // return next(new ApiError(400, "Email has been used"));
     }
-    const user = await userService.createUser(req.body);
+    const info = {
+      email: req.body.email,
+      fullName: req.body.name,
+      password: req.body.password,
+    };
+    console.log(info);
+    const user = await userService.createUser(info);
     return res.send(user);
   } catch (error) {
     console.log(error);
@@ -20,6 +26,7 @@ async function register(req, res, next) {
 }
 
 async function login(req, res, next) {
+  res.render("login");
   const docService = makeUserService();
   const login = await docService.login(req);
 
@@ -59,13 +66,38 @@ async function getUserInfo(req, res) {
   const user = await userService.getUserInfo(req.query.email);
   return res.send(user);
 }
+
 async function updateUser(req, res) {
-  const userService = makeUserService();
-  const user = await userService.updateUser(req.params.id, req.body);
-  if (user) {
-    return res
-      .status(200)
-      .send({ message: `Update user "${req.body.email}" successfully` });
+  try {
+    const userService = makeUserService();
+    const { fullName, birthday, organization } = req.body;
+    let profilePicture = null;
+    if (!req.files) {
+      profilePicture = null;
+    } else {
+      const avatar = req.files.profilePicture;
+      // if (avatar) console.log(avatar);
+      // else console.log("null");
+      profilePicture = avatar.name;
+      const path = `${DIR}${avatar.name}`;
+      avatar.mv(path, async (err) => {
+        if (err) return res.status(500).send(err);
+        console.log(`Save to ${path}`);
+      });
+    }
+    // if (!profilePicture) {
+    //   userInfo = { fullName, birthday, organization };
+    // } else
+    const userInfo = { fullName, birthday, profilePicture, organization };
+    const user = await userService.updateUser(req.params.id, userInfo);
+    if (user) {
+      // console.log(`Save to ${profilePicture}`);
+      return res
+        .status(200)
+        .send({ message: `Update user "${fullName}" successfully` });
+    }
+  } catch (error) {
+    console.log(error);
   }
 }
 

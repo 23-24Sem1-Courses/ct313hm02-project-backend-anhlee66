@@ -24,6 +24,11 @@ router
   .route("/file/:id")
   .get(fileController.getFileByID)
   .delete(fileController.deleteFile);
+router.route("/file/:id/like").get(fileController.getLike);
+router
+  .route("/like")
+  .get(fileController.checkLike)
+  .post(fileController.updateLike);
 
 router
   .route("/course")
@@ -32,5 +37,7 @@ router
 
 router.route("/course/:id").post(courseController.updateCourse);
 // .get(courseController.)
+
+// router.route("/image/:image").get(fileController.getImage);
 
 module.exports = router;

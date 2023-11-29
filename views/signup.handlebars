@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <script>
+        async function signup(user) {
+            // console.log(user)
+            let url = `${baseURL}/signup`
+            const res = await fetch(url, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(user)
+            })
+            if (res.status == 300) {
+                alert('Email has been used, change to other')
+            }
+            else {
+                alert(`Create a new user ${user.email}`)
+                window.location('/')
+            }
+            }
+    </script>
+</head>
+<body>
+    <div class="root">
+        <h2 class="text-center">Welcome to Doc Sharing</h2>
+        <div class="main">
+            <form  method="post" onsubmit="signup()" class="form-input">
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input name="email" type="email" class="form-control" />
+                    {{!--
+                    <ErrorMessage name="email" class="error-feedback text-danger" /> --}}
+                </div>
+                <div class="form-group" v-if="type === 'signup'">
+                    <label for="name">Full name</label>
+                    <input name="name" type="text" class="form-control" />
+                    {{!--
+                    <ErrorMessage name="name" class="error-feedback text-danger" /> --}}
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input name="password" type="password" class="form-control" />
+                    {{!--
+                    <ErrorMessage name="password" class="error-feedback text-danger" /> --}}
+                </div>
+                <div class="form-group ">
+                    <button class="btn btn-primary justify-content-center">Sign Up</button>
+                </div>
+                <a href="/login">Login if you have already Account</a>
+
+            </form>
+        
+        </div>
+    </div>
+    
+</body>
+</html>

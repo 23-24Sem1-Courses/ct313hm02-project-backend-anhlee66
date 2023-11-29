@@ -9,7 +9,7 @@ function makeUserService() {
       email: payload.email,
       fullName: payload.fullName,
       password: payload.password,
-      yearOfBirth: payload.yearOfBirth,
+      birthday: payload.birthday,
       profilePicture: payload.profilePicture,
       organization: payload.organization,
     };
@@ -54,7 +54,16 @@ function makeUserService() {
   }
   async function getUserInfo(email) {
     try {
-      return await knex("users").select("*").where("email", email);
+      return await knex("users")
+        .select(
+          "userID",
+          "fullName",
+          "profilePicture",
+          "birthday",
+          "organization"
+        )
+        .where("email", email)
+        .first();
     } catch (error) {
       console.log(error);
     }
@@ -63,7 +72,7 @@ function makeUserService() {
   async function updateUser(id, user) {
     try {
       const userInfo = readUserService(user);
-      console.log(id, user);
+      console.log(id, ":", user);
       return await knex("users").where("userID", id).update(userInfo);
     } catch (error) {
       console.log(error);

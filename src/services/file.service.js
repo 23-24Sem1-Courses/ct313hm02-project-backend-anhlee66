@@ -1,3 +1,4 @@
+const { da } = require("@faker-js/faker");
 const ApiError = require("../app.error");
 const knex = require("../database/knex");
 const Paginator = require("./paginator");
@@ -44,7 +45,7 @@ function makeFileService() {
           builder.where("email", "like", email);
         }
         if (search !== undefined) {
-          const words = search.split(" ");
+          const words = search.trim().split(" ");
           let key = "";
           words.forEach((word, index) => {
             key =
@@ -62,6 +63,8 @@ function makeFileService() {
         "title",
         "courseName",
         "fullName",
+        "path",
+        "uploadDate",
         "email",
         "thumbnail"
       )
@@ -95,6 +98,54 @@ function makeFileService() {
       console.log(error);
     }
   }
+  async function getLike(fileID) {
+    try {
+      return await knex("favourite")
+        .count("fileID as like")
+        .whereRaw(`fileID=${fileID} AND status='true'`)
+        .first();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function checkLike(fileID, userID) {
+    try {
+      const status = await knex("favourite")
+        .select("status")
+        .whereRaw(`fileID=${fileID} AND userID=${userID}`)
+        .first();
+      return status;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function hasLike(fileID, userID) {
+    return await knex("favourite")
+      .select("fileID", "userID")
+      .whereRaw(`fileID=${fileID} AND userID=${userID}`)
+      .distinct();
+  }
+  async function updateLike(fileID, userID, value) {
+    try {
+      const data = await hasLike(fileID, userID);
+      if (data.length > 0) {
+        console.log(data);
+        return await knex("favourite")
+          .update("status", value)
+          .whereRaw(`fileID=${fileID} AND userID=${userID}`);
+      } else {
+        console.log("create");
+        return await knex("favourite").insert({
+          fileID,
+          userID,
+          status: value,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  // async
   return {
     readFileService,
     createFile,
@@ -102,6 +153,10 @@ function makeFileService() {
     getFileByFilter,
     saveFile,
     deleteFile,
+    getLike,
+    checkLike,
+    updateLike,
+    hasLike,
   };
 }
 
